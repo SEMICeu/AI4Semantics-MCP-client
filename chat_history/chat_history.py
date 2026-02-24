@@ -1,7 +1,5 @@
 from __future__ import annotations
 from typing import (
-    List,
-    Dict,
     Iterator,
     Any,
 )
@@ -38,7 +36,7 @@ class ChatHistory:
         self,
         user: str = '',
         name: str = '',
-        messages: List[ChatCompletionMessageParam] = [],
+        messages: list[ChatCompletionMessageParam] = [],
         system_prompt: str = "",
         welcome_prompt: str = "",
     ) -> None:
@@ -104,7 +102,7 @@ class ChatHistory:
     def add_assistant_message(
         self,
         content: str,
-        tool_calls: List[ChatCompletionMessageToolCallParam] = [],
+        tool_calls: list[ChatCompletionMessageToolCallParam] = [],
     ) -> None:
         message = ChatCompletionAssistantMessageParam(
             role="assistant",
@@ -168,7 +166,7 @@ class ChatHistory:
 
         self.name = name
         with open(fp, 'r') as file:
-            params: Dict[str, Any] = load(file)
+            params: dict[str, Any] = load(file)
             self.messages = params['messages']
 
         return

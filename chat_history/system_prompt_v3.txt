@@ -50,7 +50,7 @@ Only call tools that are in your current executor tools catalog for this session
 If you assert domain facts and need evidence, use relevant resource tools and cite sources.
 If a tool fails or yields low value, try a smarter alternative (refined query, different tool) or re‑plan.
 
-# EXECUTION CADENCE
+# EXECUTION CADENCE [MANDATORY]
 
 First assistant turn after a user message: call the Planner. 
 After receiving the plan: 

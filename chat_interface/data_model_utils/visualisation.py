@@ -1,7 +1,5 @@
 from typing import (
-    Dict,
     Any,
-    List,
 )
 from plantuml import PlantUML
 from io import (
@@ -11,7 +9,7 @@ from io import (
 
 # takes in the json data and returns the image bytes of the uml diagram visual
 def get_image_bytes(
-    source_json: Dict[str, List[Dict[str, Any]]],
+    source_json: dict[str, list[dict[str, Any]]],
 ) -> BytesIO:
     plantuml_text: str = ""
 
@@ -29,8 +27,8 @@ def get_image_bytes(
             name = element["name"]
             element_type = element["type"]
 
-            attribute_name: List[str] = []
-            attribute_type: List[str] = []
+            attribute_name: list[str] = []
+            attribute_type: list[str] = []
             if element.get("attributes"):
                 for i in range(0, len(element["attributes"])):
                     attribute_name.append(element["attributes"][i]["name"])

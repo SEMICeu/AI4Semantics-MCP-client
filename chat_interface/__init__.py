@@ -1,3 +1,3 @@
 from .chat_interface import (
-    xmi_chat_tab,
+    data_modelling_chat_tab,
 )

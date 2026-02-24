@@ -1,4 +1,18 @@
+# chat_data_structure.py
+# This module transforms the user data model into a JSON format that is understandable by the LLM.
+# It provides utility functions to extract and simplify relevant information from UML-like data structures
+# (packages, classes, datatypes, enumerations, connectors) for downstream processing by language models.
+
+
 def _shorten_package(elem):
+    """
+    Extracts and simplifies relevant fields from a package element for LLM consumption.
+    Only keeps the name and tags containing 'definition' or 'uri'.
+    Args:
+        elem (dict): The package element dictionary.
+    Returns:
+        dict: A simplified package dictionary.
+    """
     package_dict = {}
     package_dict["name"] = elem["name"]
 
@@ -16,6 +30,14 @@ def _shorten_package(elem):
 
 
 def _shorten_class(elem):
+    """
+    Extracts and simplifies relevant fields from a class element for LLM consumption.
+    Keeps the name, filtered tags, and attributes (name, type, tags).
+    Args:
+        elem (dict): The class element dictionary.
+    Returns:
+        dict: A simplified class dictionary.
+    """
     class_dict = {}
     class_dict["name"] = elem["name"]
 
@@ -48,6 +70,14 @@ def _shorten_class(elem):
 
 
 def _shorten_datatype(elem):
+    """
+    Extracts and simplifies relevant fields from a datatype element for LLM consumption.
+    Keeps the name, filtered tags, and attributes (name, type, lower_bounds, upper_bounds).
+    Args:
+        elem (dict): The datatype element dictionary.
+    Returns:
+        dict: A simplified datatype dictionary.
+    """
     datatype_dict = {}
     datatype_dict["name"] = elem["name"]
 
@@ -78,6 +108,14 @@ def _shorten_datatype(elem):
 
 
 def _shorten_enum(elem):
+    """
+    Extracts and simplifies relevant fields from an enumeration element for LLM consumption.
+    Keeps the name, filtered tags, and categories.
+    Args:
+        elem (dict): The enumeration element dictionary.
+    Returns:
+        dict: A simplified enumeration dictionary.
+    """
     enum_dict = {}
     enum_dict["name"] = elem["name"]
 
@@ -99,6 +137,14 @@ def _shorten_enum(elem):
 
 
 def _shorten_elements(elements):
+    """
+    Processes a list of elements and sorts them into packages, classes, datatypes, and enumerations,
+    applying the appropriate shortening function to each.
+    Args:
+        elements (list): List of element dictionaries.
+    Returns:
+        dict: Dictionary with keys 'packages', 'classes', 'datatypes', 'enumerations'.
+    """
     packages = []
     classes = []
     datatypes = []
@@ -127,6 +173,14 @@ def _shorten_elements(elements):
 
 
 def _shorten_connector(conn):
+    """
+    Extracts and simplifies relevant fields from a connector element for LLM consumption.
+    Keeps source/target names, relationship, and bounds if present.
+    Args:
+        conn (dict): The connector element dictionary.
+    Returns:
+        dict: A simplified connector dictionary.
+    """
     conn_dict = {}
     conn_dict["source_name"] = conn["source_name"]
     conn_dict["target_name"] = conn["target_name"]
@@ -143,6 +197,14 @@ def _shorten_connector(conn):
 
 
 def shorten_json(json_data):
+    """
+    Transforms the full user data model into a simplified JSON format for LLM input.
+    Processes elements and connectors using the above utility functions.
+    Args:
+        json_data (dict): The original user data model as a dictionary.
+    Returns:
+        dict: The transformed, LLM-ready data model.
+    """
     data_model = {}
 
     data_model["elements"] = _shorten_elements(json_data["elements"])
