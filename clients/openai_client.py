@@ -1,5 +1,4 @@
 from typing import (
-    Dict,
     Any,
 )
 from os import (
@@ -21,11 +20,11 @@ class OpenAIClient():
 
     def __init__(self) -> None:
         with open('./clients/.openai_client_config.yaml') as file:
-            configs: Dict[str, Any] = safe_load(file)
+            configs: dict[str, Any] = safe_load(file)
 
         API: str = str(getenv('API'))
-        config: Dict[str, Any] = configs[API]
-        self._config: Dict[str, Any] = config
+        config: dict[str, Any] = configs[API]
+        self._config: dict[str, Any] = config
 
         if config['client'] == 'OpenAI':
             openai: AsyncOpenAI = AsyncOpenAI(**config['init'])

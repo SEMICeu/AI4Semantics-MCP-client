@@ -1,5 +1,4 @@
 from typing import (
-    Dict,
     Any,
 )
 from xml.etree.ElementTree import (
@@ -12,12 +11,12 @@ from xml.etree.ElementTree import (
 
 
 def _add_packaged_element(
-    element_dict: Dict[str, Any]
+    element_dict: dict[str, Any]
 ) -> Element:
     """
     Creates an XML 'packagedElement' for a given element.
 
-    :param element_dict: Dictionary containing the element's attributes.
+    :param element_dict: dictionary containing the element's attributes.
     :return: An XML element representing the packaged element.
     """
     element = Element('packagedElement')
@@ -28,12 +27,12 @@ def _add_packaged_element(
 
 
 def _add_package(
-    element_dict: Dict[str, Any],
+    element_dict: dict[str, Any],
 ) -> Element:
     """
     Creates an XML representation for a UML package element.
 
-    :param element_dict: Dictionary containing the package's details and tags.
+    :param element_dict: dictionary containing the package's details and tags.
     :return: An XML element representing the UML package.
     """
     element = Element('element')
@@ -55,12 +54,12 @@ def _add_package(
 
 
 def _add_class(
-    element_dict: Dict[str, Any],
+    element_dict: dict[str, Any],
 ) -> Element:
     """
     Creates an XML representation for a UML class element, including attributes and tags.
 
-    :param element_dict: Dictionary containing the class's details, attributes, and tags.
+    :param element_dict: dictionary containing the class's details, attributes, and tags.
     :return: An XML element representing the UML class.
     """
     element = Element('element')
@@ -107,12 +106,12 @@ def _add_class(
 
 
 def _add_datatype(
-    element_dict: Dict[str, Any],
+    element_dict: dict[str, Any],
 ) -> Element:
     """
     Creates an XML representation for a UML datatype element, including attributes and tags.
 
-    :param element_dict: Dictionary containing the datatype's details, attributes, and tags.
+    :param element_dict: dictionary containing the datatype's details, attributes, and tags.
     :return: An XML element representing the UML datatype.
     """
     element = Element('element')
@@ -159,12 +158,12 @@ def _add_datatype(
 
 
 def _add_enumeration(
-    element_dict: Dict[str, Any],
+    element_dict: dict[str, Any],
 ) -> Element:
     """
     Creates an XML representation for a UML enumeration element.
 
-    :param element_dict: Dictionary containing the enumeration's details, categories, and tags.
+    :param element_dict: dictionary containing the enumeration's details, categories, and tags.
     :return: An XML element representing the UML enumeration.
     """
     element = Element('element')
@@ -200,12 +199,12 @@ def _add_enumeration(
 
 
 def _add_connector(
-    connector_dict: Dict[str, Any],
+    connector_dict: dict[str, Any],
 ) -> Element:
     """
     Creates an XML representation for a UML connector.
 
-    :param connector_dict: Dictionary containing connector's details, relationships, and tags.
+    :param connector_dict: dictionary containing connector's details, relationships, and tags.
     :return: An XML element representing the UML connector.
     """
     connector = Element('connector')
@@ -249,7 +248,7 @@ def _add_connector(
 
 def _fill_in_xml(
     root: Element,
-    json_data: Dict[str, Any],
+    json_data: dict[str, Any],
 ) -> Element:
     """
     Populates the XML root element with elements and connectors based on the provided JSON data.
@@ -329,7 +328,7 @@ def _get_root() -> Element:
 
 
 def json_to_xml(
-    json_data: Dict[str, Any],
+    json_data: dict[str, Any],
 ) -> bytes:
     """
     Converts JSON data describing UML elements and connectors into an XML representation.

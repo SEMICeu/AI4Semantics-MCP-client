@@ -1,30 +1,47 @@
 import os
-from asyncio import (
-    run,
-)
+from asyncio import run as asyncio_run
 import streamlit as st
-from chat_interface import (
-    xmi_chat_tab,
-)
 
+from chat_interface import data_modelling_chat_tab  # keep your original import style
 
-# Setting up environment variables and kernel
-# os.environ["OPENAI_API_VERSION"] = "2023-12-01-preview"
-# os.environ["AZURE_OPENAI_ENDPOINT"] = st.secrets["ENDPOINT"]
-# os.environ["AZURE_OPENAI_API_KEY"] = st.secrets["KEY"]
+# One-time secrets → env hydration (guarded)
+try:
+    st.session_state.setdefault('add_env', True)
+    if st.session_state['add_env']:
+        st.session_state['add_env'] = False
+        os.environ.update(st.secrets)  # if st.secrets present, update env
+except Exception as e:
+    # Non-fatal; app can continue
+    st.warning(f"Could not apply secrets to environment: {e}")
 
-
-# load_dotenv(override=True)
-st.session_state['add_env'] = True
-if st.session_state['add_env']:
-    st.session_state['add_env'] = False
-    os.environ.update(st.secrets)
-
-
-# set layout
+# Set layout
 st.set_page_config(layout="wide")
 
-tab1, *_ = st.tabs(["XMI chat"])
+# Tabs
+tab1, *_ = st.tabs(["Data Model chat"])
 
 with tab1:
-    run(xmi_chat_tab())
+    try:
+        asyncio_run(data_modelling_chat_tab())
+    except Exception as e:
+        # Ensure user-friendly error at top-level
+        try:
+            # Preferred UX if supported
+            with st.status("The UI encountered an unexpected error.", expanded=True, state="error") as status:
+                st.write(str(e))
+                st.write(
+                    "**What you can do now:**\n"
+                    "1) Review your inputs and correct the bug if possible.\n"
+                    "2) Re-launch the UI.\n"
+                    "3) If the error keeps happening, contact the tech team at **emilien.caudron@pwc.com**."
+                )
+                status.update(label="Action required", state="error")
+        except Exception:
+            st.error("The UI encountered an unexpected error.")
+            st.write(str(e))
+            st.write(
+                "**What you can do now:**\n"
+                "1) Review your inputs and correct the bug if possible.\n"
+                "2) Re-launch the UI.\n"
+                "3) If the error keeps happening, contact the tech team at **emilien.caudron@pwc.com**."
+            )
