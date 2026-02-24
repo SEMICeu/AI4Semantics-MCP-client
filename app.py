@@ -3,7 +3,7 @@ from asyncio import (
     run,
 )
 import streamlit as st
-from tabs import (
+from chat_interface import (
     xmi_chat_tab,
 )
 

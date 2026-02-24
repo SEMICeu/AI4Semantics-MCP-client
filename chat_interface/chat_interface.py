@@ -18,7 +18,7 @@ from .scripts_xmi_chat.model_utils import (
     download_xml,
     visualise,
 )
-from .scripts_xmi_chat.chatbox import (
+from .chat_logic import (
     set_chatbox_layout,
     process_user_input,
 )
