@@ -1,5 +1,5 @@
 [server]
-port = 8000
+port = 8002
 maxUploadSize = 5
 enableXsrfProtection = false
 enableCORS = false
