@@ -1,6 +1,11 @@
 import os
 from asyncio import run as asyncio_run
 import streamlit as st
+from config import load_config
+
+config = load_config()
+
+SERVER = config["MCP-server"]["local"]
 
 from chat_interface import data_modelling_chat_tab  # keep your original import style
 
@@ -22,7 +27,7 @@ tab1, *_ = st.tabs(["Data Model chat"])
 
 with tab1:
     try:
-        asyncio_run(data_modelling_chat_tab())
+        asyncio_run(data_modelling_chat_tab(server=SERVER))
     except Exception as e:
         # Ensure user-friendly error at top-level
         try:

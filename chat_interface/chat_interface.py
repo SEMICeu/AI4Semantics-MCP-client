@@ -92,7 +92,7 @@ def safe_json_loads(text: Optional[str]) -> dict:
 # ----------------------------------------------------------------------
 # Main tab
 # ----------------------------------------------------------------------
-async def data_modelling_chat_tab() -> None:
+async def data_modelling_chat_tab(server:str) -> None:
     """
     Main function for the data modelling chat tab in the Streamlit app.
     Handles user/session management, model upload/visualization, and chat interface.
@@ -132,7 +132,7 @@ async def data_modelling_chat_tab() -> None:
         # Initialize MCP client if not present
         if "mcp_client" not in st.session_state:
             try:
-                st.session_state["mcp_client"] = MCPClient(st.session_state)
+                st.session_state["mcp_client"] = MCPClient(st.session_state, server=server)
             except Exception as e:
                 show_user_error("MCP client initialization failed.", details=str(e))
                 return
