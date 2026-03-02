@@ -113,11 +113,17 @@ async def data_modelling_chat_tab(server:str) -> None:
 
         st.session_state["visualise"] = False  # Reset visualisation toggle each run
 
-        # Initialize chat history if not present
+        # Initialize chat history if not present; user/session come from login page
         if "history" not in st.session_state:
-            st.session_state['history'] = ChatHistory()
+            st.session_state["history"] = ChatHistory(
+                user=st.session_state.get("user_name", ""),
+                name=st.session_state.get("session_id", ""),
+            )
 
         chat_history: ChatHistory = st.session_state["history"]
+        # Always use login metadata for user/session (no re-entry in chat tab)
+        chat_history.user = st.session_state.get("user_name", "") or chat_history.user
+        chat_history.name = st.session_state.get("session_id", "") or chat_history.name
         st.session_state["user"] = chat_history.user
         st.session_state["name"] = chat_history.name
 
@@ -163,44 +169,13 @@ async def data_modelling_chat_tab(server:str) -> None:
         show_user_error("A critical error occurred during initialization.", details=str(e))
         return
 
-    # --- Column 1: User/session management ---
+    # --- Column 1: Read-only user/session from login (no re-entry; metadata reused from login page) ---
     with col1:
         try:
-            if chat_history.user:
-                st.write(f'User: {chat_history.user}')
-                if chat_history.name:
-                    st.write(f'Session: {chat_history.name}')
-                else:
-                    # Input for session name if not set
-                    chat_history.name = st.text_input(label='Enter Session:')
-                    if st.button(label='Set Session', disabled=not bool(chat_history.user)):
-                        try:
-                            chat_history.save()
-                        except Exception as e:
-                            show_user_error("A critical error occurred while saving the session.", details=str(e))
-                            return
-                        st.rerun()
-
-                # Option to reload a different session
-                reload_session = st.text_input(
-                    label='Session to load:',
-                    disabled=not bool(chat_history.user),
-                    placeholder="",
-                )
-                if st.button(label='Load Session', disabled=not bool(chat_history.user)):
-                    try:
-                        chat_history.load(reload_session)
-                    except Exception as e:
-                        show_user_error("A critical error occurred while loading the session.", details=str(e))
-                        return
-                    st.rerun()
-            else:
-                # Input for user name if not set
-                chat_history.user = st.text_input(label='Enter User:')
-                if st.button('Set User'):
-                    st.rerun()
+            st.write(f"**User:** {chat_history.user or '—'}")
+            st.write(f"**Session:** {chat_history.name or '—'}")
         except Exception as e:
-            show_user_error("A critical error occurred in user/session management.", details=str(e))
+            show_user_error("A critical error occurred in user/session display.", details=str(e))
             return
 
     # --- Column 3: Model upload/visualisation + chat ---
