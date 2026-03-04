@@ -42,6 +42,7 @@ class ChatHistory:
     ) -> None:
         self.user: str = user
         self.name: str = name
+        self.model_filename: str = ""
         if messages:
             self.messages = messages
 
@@ -142,12 +143,14 @@ class ChatHistory:
             return
 
         fp: str = f'{dp}/{self.name}.json'
-        with open(fp, 'w') as file:
+        with open(fp, 'w', encoding='utf-8') as file:
             dump(
                 {
                     'messages': self.messages,
+                    'model_filename': getattr(self, 'model_filename', '') or '',
                 },
-                file
+                file,
+                ensure_ascii=False,
             )
 
         return
@@ -165,8 +168,9 @@ class ChatHistory:
             return
 
         self.name = name
-        with open(fp, 'r') as file:
+        with open(fp, 'r', encoding='utf-8') as file:
             params: dict[str, Any] = load(file)
             self.messages = params['messages']
+            self.model_filename = params.get('model_filename') or ''
 
         return

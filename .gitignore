@@ -4,6 +4,8 @@
 **/secrets.toml
 venv
 venv-windows
+chat_history/logs/**
+chat_history/histories/**
 .vscode
 **/client_config.yaml
 .env
