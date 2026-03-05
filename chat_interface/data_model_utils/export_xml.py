@@ -1,13 +1,12 @@
-from typing import (
-    Any,
-)
-from xml.etree.ElementTree import (
-    Element,
-    SubElement,
-    fromstring,
-    register_namespace,
-    tostring,
-)
+from typing import Any
+from xml.etree.ElementTree import Element, SubElement, fromstring, register_namespace, tostring
+
+
+def _set_attr(elem: Element, key: str, value: Any) -> None:
+    """Safely set an XML attribute, skipping None and stringifying values."""
+    if value is None:
+        return
+    elem.set(key, str(value))
 
 
 def _add_packaged_element(
@@ -20,9 +19,9 @@ def _add_packaged_element(
     :return: An XML element representing the packaged element.
     """
     element = Element('packagedElement')
-    element.set('xmi:id', element_dict["ID"])
-    element.set('xmi:type', element_dict["type"])
-    element.set('name', element_dict["name"])
+    _set_attr(element, 'xmi:id', element_dict.get("ID"))
+    _set_attr(element, 'xmi:type', element_dict.get("type"))
+    _set_attr(element, 'name', element_dict.get("name"))
     return element
 
 
@@ -36,19 +35,19 @@ def _add_package(
     :return: An XML element representing the UML package.
     """
     element = Element('element')
-    element.set('xmi:idref', element_dict["ID"])
-    element.set('xmi:type', element_dict["type"])
-    element.set('name', element_dict["name"])
+    _set_attr(element, 'xmi:idref', element_dict.get("ID"))
+    _set_attr(element, 'xmi:type', element_dict.get("type"))
+    _set_attr(element, 'name', element_dict.get("name"))
 
     model = SubElement(element, 'model')
-    model.set("package", element_dict["package"])
+    _set_attr(model, "package", element_dict.get("package"))
 
     tags = SubElement(element, 'tags')
     for tag_dict in element_dict["tags"]:
         tag = SubElement(tags, 'tag')
-        tag.set("name", tag_dict["name"])
-        tag.set("value", tag_dict["value"])
-        tag.set("modelElement", element_dict["ID"])
+        _set_attr(tag, "name", tag_dict.get("name"))
+        _set_attr(tag, "value", tag_dict.get("value"))
+        _set_attr(tag, "modelElement", element_dict.get("ID"))
 
     return element
 
@@ -63,41 +62,41 @@ def _add_class(
     :return: An XML element representing the UML class.
     """
     element = Element('element')
-    element.set('xmi:idref', element_dict["ID"])
-    element.set('xmi:type', element_dict["type"])
-    element.set('name', element_dict["name"])
+    _set_attr(element, 'xmi:idref', element_dict.get("ID"))
+    _set_attr(element, 'xmi:type', element_dict.get("type"))
+    _set_attr(element, 'name', element_dict.get("name"))
 
     model = SubElement(element, 'model')
-    model.set("package", element_dict["package"])
+    _set_attr(model, "package", element_dict.get("package"))
 
     tags = SubElement(element, 'tags')
     for tag_dict in element_dict["tags"]:
         tag = SubElement(tags, 'tag')
-        tag.set("name", tag_dict["name"])
-        tag.set("value", tag_dict["value"])
-        tag.set("modelElement", element_dict["ID"])
+        _set_attr(tag, "name", tag_dict.get("name"))
+        _set_attr(tag, "value", tag_dict.get("value"))
+        _set_attr(tag, "modelElement", element_dict.get("ID"))
 
     try:
         attributes = SubElement(element, 'attributes')
         for attribute_dict in element_dict['attributes']:
             attribute = SubElement(attributes, 'attribute')
-            attribute.set("name", attribute_dict["name"])
+            _set_attr(attribute, "name", attribute_dict.get("name"))
 
             if attribute_dict.get('type') is not None:
                 properties = SubElement(attribute, 'properties')
-                properties.set('type', attribute_dict['type'])
+                _set_attr(properties, 'type', attribute_dict.get('type'))
 
             if attribute_dict.get('lower_bounds') is not None:
                 bounds = SubElement(attribute, 'bounds')
-                bounds.set("lower", attribute_dict['lower_bounds'])
-                bounds.set('upper', attribute_dict['upper_bounds'])
+                _set_attr(bounds, "lower", attribute_dict.get('lower_bounds'))
+                _set_attr(bounds, 'upper', attribute_dict.get('upper_bounds'))
 
             if attribute_dict.get('tags_attribute') is not None:
                 tags = SubElement(attribute, 'tags')
                 for tag_attribute_dict in attribute_dict['tags_attribute']:
                     tag = SubElement(tags, 'tag')
-                    tag.set('name', tag_attribute_dict["name"])
-                    tag.set('value', tag_attribute_dict['value'])
+                    _set_attr(tag, 'name', tag_attribute_dict.get("name"))
+                    _set_attr(tag, 'value', tag_attribute_dict.get('value'))
 
     except KeyError:
         pass
@@ -115,41 +114,41 @@ def _add_datatype(
     :return: An XML element representing the UML datatype.
     """
     element = Element('element')
-    element.set('xmi:idref', element_dict["ID"])
-    element.set('xmi:type', element_dict["type"])
-    element.set('name', element_dict["name"])
+    _set_attr(element, 'xmi:idref', element_dict.get("ID"))
+    _set_attr(element, 'xmi:type', element_dict.get("type"))
+    _set_attr(element, 'name', element_dict.get("name"))
 
     model = SubElement(element, 'model')
-    model.set("package", element_dict["package"])
+    _set_attr(model, "package", element_dict.get("package"))
 
     tags = SubElement(element, 'tags')
     for tag_dict in element_dict["tags"]:
         tag = SubElement(tags, 'tag')
-        tag.set("name", tag_dict["name"])
-        tag.set("value", tag_dict["value"])
-        tag.set("modelElement", element_dict["ID"])
+        _set_attr(tag, "name", tag_dict.get("name"))
+        _set_attr(tag, "value", tag_dict.get("value"))
+        _set_attr(tag, "modelElement", element_dict.get("ID"))
 
     try:
         attributes = SubElement(element, 'attributes')
         for attribute_dict in element_dict['attributes']:
             attribute = SubElement(attributes, 'attribute')
-            attribute.set("name", attribute_dict["name"])
+            _set_attr(attribute, "name", attribute_dict.get("name"))
 
             if attribute_dict.get('type') is not None:
                 properties = SubElement(attribute, 'properties')
-                properties.set('type', attribute_dict['type'])
+                _set_attr(properties, 'type', attribute_dict.get('type'))
 
             if attribute_dict.get('lower_bounds') is not None:
                 bounds = SubElement(attribute, 'bounds')
-                bounds.set("lower", attribute_dict['lower_bounds'])
-                bounds.set('upper', attribute_dict['upper_bounds'])
+                _set_attr(bounds, "lower", attribute_dict.get('lower_bounds'))
+                _set_attr(bounds, 'upper', attribute_dict.get('upper_bounds'))
 
             if attribute_dict.get('tags_attribute') is not None:
                 tags = SubElement(attribute, 'tags')
                 for tag_attribute_dict in attribute_dict['tags_attribute']:
                     tag = SubElement(tags, 'tag')
-                    tag.set('name', tag_attribute_dict["name"])
-                    tag.set('value', tag_attribute_dict['value'])
+                    _set_attr(tag, 'name', tag_attribute_dict.get("name"))
+                    _set_attr(tag, 'value', tag_attribute_dict.get('value'))
 
     except KeyError:
         pass
@@ -167,28 +166,28 @@ def _add_enumeration(
     :return: An XML element representing the UML enumeration.
     """
     element = Element('element')
-    element.set('xmi:idref', element_dict["ID"])
-    element.set('xmi:type', element_dict["type"])
-    element.set('name', element_dict["name"])
+    _set_attr(element, 'xmi:idref', element_dict.get("ID"))
+    _set_attr(element, 'xmi:type', element_dict.get("type"))
+    _set_attr(element, 'name', element_dict.get("name"))
 
     model = SubElement(element, 'model')
-    model.set("package", element_dict["package"])
+    _set_attr(model, "package", element_dict.get("package"))
 
     properties = SubElement(element, "properties")
-    properties.set("sType", "Enumeration")
+    _set_attr(properties, "sType", "Enumeration")
 
     tags = SubElement(element, 'tags')
     for tag_dict in element_dict["tags"]:
         tag = SubElement(tags, 'tag')
-        tag.set("name", tag_dict["name"])
-        tag.set("value", tag_dict["value"])
-        tag.set("modelElement", element_dict["ID"])
+        _set_attr(tag, "name", tag_dict.get("name"))
+        _set_attr(tag, "value", tag_dict.get("value"))
+        _set_attr(tag, "modelElement", element_dict.get("ID"))
 
     try:
         attributes = SubElement(element, 'attributes')
         for category in element_dict["categories"]:
             attribute = SubElement(attributes, 'attribute')
-            attribute.set("name", category)
+            _set_attr(attribute, "name", category)
 
     except KeyError:
         pass
@@ -211,37 +210,37 @@ def _add_connector(
 
     source = SubElement(connector, 'source')
     model = SubElement(source, 'model')
-    model.set('name', connector_dict['source_name'])
+    _set_attr(model, 'name', connector_dict.get('source_name'))
 
     tags = SubElement(source, 'tags')
     for tag_dict in connector_dict['tags_source']:
         tag = SubElement(tags, 'tag')
-        tag.set('name', tag_dict['name'])
-        tag.set('value', tag_dict['value'])
+        _set_attr(tag, 'name', tag_dict.get('name'))
+        _set_attr(tag, 'value', tag_dict.get('value'))
 
     target = SubElement(connector, 'target')
     model = SubElement(target, 'model')
-    model.set('name', connector_dict['target_name'])
+    _set_attr(model, 'name', connector_dict.get('target_name'))
 
     tags = SubElement(target, 'tags')
     for tag_dict in connector_dict['tags_target']:
         tag = SubElement(tags, 'tag')
-        tag.set('name', tag_dict['name'])
-        tag.set('value', tag_dict['value'])
+        _set_attr(tag, 'name', tag_dict.get('name'))
+        _set_attr(tag, 'value', tag_dict.get('value'))
 
     properties = SubElement(connector, 'properties')
-    properties.set('ea_type', connector_dict['relationship'])
+    _set_attr(properties, 'ea_type', connector_dict.get('relationship'))
 
     labels = SubElement(connector, 'labels')
     for bound in ['lb', 'lt', 'rb', 'rt']:
         if connector_dict.get(bound) is not None:
-            labels.set(bound, connector_dict[bound])
+            _set_attr(labels, bound, connector_dict.get(bound))
 
     tags = SubElement(connector, 'tags')
     for tag_dict in connector_dict['tags']:
         tag = SubElement(tags, 'tag')
-        tag.set('name', tag_dict['name'])
-        tag.set('value', tag_dict['value'])
+        _set_attr(tag, 'name', tag_dict.get('name'))
+        _set_attr(tag, 'value', tag_dict.get('value'))
 
     return connector
 

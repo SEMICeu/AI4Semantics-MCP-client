@@ -3,6 +3,7 @@ from __future__ import annotations
 import csv
 import logging
 import random
+import time
 from datetime import datetime
 from io import BytesIO
 from json import loads as json_loads, dumps as json_dumps
@@ -13,6 +14,7 @@ from typing import Any, Dict, List
 from dotenv import load_dotenv
 from fastapi import FastAPI, File, Form, HTTPException, Response, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
+from starlette.middleware.base import BaseHTTPMiddleware
 from openinference.instrumentation import using_attributes
 from openinference.instrumentation.mcp import MCPInstrumentor
 from openinference.instrumentation.openai import OpenAIInstrumentor
@@ -64,6 +66,18 @@ if not logger.handlers:
     handler.setFormatter(logging.Formatter("[%(asctime)s] %(levelname)s %(name)s: %(message)s"))
     logger.addHandler(handler)
 
+
+class RequestDurationMiddleware(BaseHTTPMiddleware):
+    """Add X-Request-Duration-Ms header so the frontend can show how long the request took."""
+
+    async def dispatch(self, request, call_next):
+        start = time.perf_counter()
+        response = await call_next(request)
+        duration_ms = round((time.perf_counter() - start) * 1000)
+        response.headers["X-Request-Duration-Ms"] = str(duration_ms)
+        return response
+
+
 app = FastAPI(
     title="Data Modelling Assistant API",
     description=(
@@ -80,6 +94,8 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+app.add_middleware(RequestDurationMiddleware)
 
 
 class ChatRequest(BaseModel):
@@ -476,6 +492,12 @@ async def list_mcp_tools() -> List[Dict[str, Any]]:
 
     openai_tools: List[ChatCompletionToolParam] = []
     for t in tools:
+        # Do not expose upload_model directly to the LLM; it is driven
+        # via the /model/upload endpoint so that we always pass a proper
+        # parsed model payload. If the LLM calls it without "model", the
+        # MCP server raises a validation error.
+        if t.name == "upload_model":
+            continue
         openai_tools.append(
             ChatCompletionToolParam(
                 type="function",
@@ -662,8 +684,10 @@ async def chat_endpoint(payload: ChatRequest) -> ChatResponse:
                     except Exception:
                         args = {}
 
-                    args.setdefault("user", user_name)
-                    args.setdefault("name", session_id)
+                    # Always use the current user/session for MCP tools,
+                    # even if the LLM provided different placeholders.
+                    args["user"] = user_name
+                    args["name"] = session_id
 
                     try:
                         tool_result = await call_mcp_tool(name, args)
