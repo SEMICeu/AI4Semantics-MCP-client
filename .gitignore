@@ -4,8 +4,11 @@
 **/secrets.toml
 venv
 venv-windows
+chat_history/logs/**
+chat_history/histories/**
 .vscode
 **/client_config.yaml
+**/.openai_client_config.yaml
 .env
 env 5
 chat_history/histories/**
