@@ -394,20 +394,20 @@ async def download_model(user_name: str, session_id: str) -> Response:
 
     model = json_loads(text)
 
-    if isinstance(model, dict) and "elements" in model and "connectors" in model:
-        xml_bytes = json_to_xml(model)
-        return Response(
-            content=xml_bytes,
-            media_type="application/xml",
-            headers={"Content-Disposition": f'attachment; filename="{session_id}.xmi"'},
-        )
-
     if isinstance(model, dict) and "ttl" in model:
         ttl_bytes = jsonld_to_ttl_bytes(model["ttl"])
         return Response(
             content=ttl_bytes,
             media_type="text/turtle",
             headers={"Content-Disposition": f'attachment; filename="{session_id}.ttl"'},
+        )
+    
+    if isinstance(model, dict) and "elements" in model and "connectors" in model:
+        xml_bytes = json_to_xml(model)
+        return Response(
+            content=xml_bytes,
+            media_type="application/xml",
+            headers={"Content-Disposition": f'attachment; filename="{session_id}.xmi"'},
         )
 
     raise HTTPException(
@@ -430,10 +430,10 @@ async def model_diagram(user_name: str, session_id: str) -> Response:
 
     model = json_loads(text)
 
-    if isinstance(model, dict) and "elements" in model and "connectors" in model:
-        uml_json = model
-    elif isinstance(model, dict) and "xmi" in model:
+    if isinstance(model, dict) and "xmi" in model:
         uml_json = model["xmi"]
+    elif isinstance(model, dict) and "elements" in model and "connectors" in model:
+        uml_json = model
     else:
         raise HTTPException(
             status_code=500,
@@ -620,10 +620,10 @@ async def chat_endpoint(payload: ChatRequest) -> ChatResponse:
         logger.info("Model context not available or failed to load: %s", e)
 
     model_prompt = ""
-    if model and "elements" in model:
-        model_prompt = "\n".join(["[USER.MODEL]", str(shorten_json(model)), "[USER.INPUT]", ""])
-    elif model and "ttl" in model:
+    if model and "ttl" in model:
         model_prompt = "\n".join(["[USER.MODEL]", str(model["ttl"]), "[USER.INPUT]", ""])
+    elif model and "elements" in model:
+        model_prompt = "\n".join(["[USER.MODEL]", str(shorten_json(model)), "[USER.INPUT]", ""])
 
     completions = OpenAIClient().chat_completions
     steps: List[Step] = []
@@ -730,3 +730,4 @@ async def chat_endpoint(payload: ChatRequest) -> ChatResponse:
     history.save()
 
     return ChatResponse(messages=history.messages, steps=steps)
+
